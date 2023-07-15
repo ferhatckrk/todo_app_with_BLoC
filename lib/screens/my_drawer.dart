@@ -4,15 +4,9 @@ import 'package:todo_app_bloc/screens/recycler_bin.dart';
 import 'package:todo_app_bloc/screens/task_screen.dart';
 import '../blocs/bloc_exports.dart';
 
-class MyDrawer extends StatefulWidget {
+class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
-  @override
-  State<MyDrawer> createState() => _MyDrawerState();
-}
-
-class _MyDrawerState extends State<MyDrawer> {
-  bool switchValue = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -45,11 +39,25 @@ class _MyDrawerState extends State<MyDrawer> {
               );
             },
           ),
-          Switch(
-            value: switchValue,
-            onChanged: (value) => setState(
-              () => switchValue = value,
-            ),
+          const Spacer(),
+          BlocBuilder<SwitchBloc, SwitchState>(
+            builder: (context, state) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.sunny),
+                  Switch(
+                    value: state.switchValue,
+                    onChanged: (value) {
+                      value
+                          ? context.read<SwitchBloc>().add(SwitchOnEvent())
+                          : context.read<SwitchBloc>().add(SwitchOffEvent());
+                    },
+                  ),
+                  const Icon(Icons.nightlight),
+                ],
+              );
+            },
           )
         ]),
       ),

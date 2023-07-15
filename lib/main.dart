@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:todo_app_bloc/model/task.dart';
 import 'package:todo_app_bloc/screens/task_screen.dart';
 import 'package:todo_app_bloc/service/app_router.dart';
+import 'package:todo_app_bloc/service/app_theme.dart';
 import 'blocs/bloc_exports.dart';
 
 void main() async {
@@ -19,12 +20,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => TasksBloc(),
-      child: MaterialApp(
-        onGenerateRoute: (settings) => AppRouter().onGenarateRoute(settings),
-        title: 'Material App',
-        home: const TaskScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => TasksBloc(),
+        ),
+        BlocProvider(
+          create: (context) => SwitchBloc(),
+        ),
+      ],
+      child: BlocBuilder<SwitchBloc, SwitchState>(
+        builder: (context, state) {
+          return MaterialApp(
+            theme: AppThemes.appThemeData[AppTheme.lightTheme],
+            darkTheme: AppThemes.appThemeData[AppTheme.darkTheme],
+            themeMode: state.switchValue ? ThemeMode.dark : ThemeMode.light,
+            onGenerateRoute: (settings) =>
+                AppRouter().onGenarateRoute(settings),
+            title: 'Material App',
+            home: const TaskScreen(),
+          );
+        },
       ),
     );
   }
